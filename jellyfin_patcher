@@ -1,0 +1,37 @@
+#!/bin/bash
+
+NEW_TITLE=Rev4.tk
+
+safe_rm(){
+        if [[ -f "$1" ]]; then
+                sudo rm $1
+        fi
+}
+
+echo "** Jellyfin Patcher **"
+
+echo "-> Change pages titles by $NEW_TITLE"
+sudo sed -i -e "s/Jellyfin/$NEW_TITLE/g" /usr/share/jellyfin/web/scripts/libraryMenu.js
+sudo sed -i -e "s/Jellyfin/$NEW_TITLE/g" /usr/share/jellyfin/web/manifest.json
+sudo sed -i -e "s/Jellyfin/$NEW_TITLE/g" /usr/share/jellyfin/web/index.html
+
+echo "-> Remove .png logo branded files"
+safe_rm /usr/share/jellyfin/web/touchicon.png
+safe_rm /usr/share/jellyfin/web/touchicon114.png
+safe_rm /usr/share/jellyfin/web/touchicon144.png
+safe_rm /usr/share/jellyfin/web/touchicon512.png
+safe_rm /usr/share/jellyfin/web/touchicon72.png
+safe_rm /usr/share/jellyfin/web/assets/img/banner-dark.png
+safe_rm /usr/share/jellyfin/web/assets/img/banner-light.png
+safe_rm /usr/share/jellyfin/web/assets/img/icon-transparent.png
+
+echo "-> Replace favicons"
+sudo rm /usr/share/jellyfin/web/favicon.ico
+sudo cp favicon.ico /usr/share/jellyfin/web/favicon.ico
+sudo rm /usr/share/jellyfin/web/favicon.png
+sudo cp favicon.png /usr/share/jellyfin/web/favicon.png
+
+echo "Restart Jellyfin..."
+sudo systemctl restart jellyfin
+
+echo "Patched."
